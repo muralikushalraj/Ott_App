@@ -5,6 +5,7 @@ import MovieList from "./components/MovieList";
 import SearchBox from "./components/SearchBox";
 import MovieListHeading from "./components/MovieListHeading";
 import AddFavorites from "./components/AddFavourites";
+import RemoveFavourites from "./components/RemoveFavourites";
 
 function App() {
   const [movies, setMovies] = useState([]);
@@ -19,11 +20,22 @@ function App() {
       setMovies(responseJson.Search);
     }
   };
-
+  const saveToLocalStorage = (items) => {
+    localStorage.setItem("Ott-App-Favourite", JSON.stringify(items));
+  }
   const AddFavouriteMovie = (movie) => {
     const newFavouriteList = [...favourites, movie];
     setFavourites(newFavouriteList);
+    saveToLocalStorage(newFavouriteList);
   };
+  const RemoveFavouriteMovie = (movie) => {
+    const newFavouriteList = favourites.filter(
+      (favourite) => favourite.imdbID !== movie.imdbID
+    );
+    setFavourites(newFavouriteList);
+    saveToLocalStorage(newFavouriteList);
+  }
+  
   useEffect(() => {
     getMovieRequest(searchValue);
   }, [searchValue]);
@@ -45,7 +57,9 @@ function App() {
         <MovieListHeading heading="Favourites" />
       </div>
       <div className="row">
-        <MovieList movies={favourites} />
+        <MovieList movies={favourites}
+          handleFavouritesClick={RemoveFavouriteMovie}
+          favouriteComponent={RemoveFavourites} />
       </div>
     </div>
   );
